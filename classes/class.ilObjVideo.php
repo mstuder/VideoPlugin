@@ -2,11 +2,11 @@
 
 include_once("./Services/Repository/classes/class.ilObjectPlugin.php");
 require_once("./Services/Tracking/interfaces/interface.ilLPStatusPlugin.php");
-require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/TestRepositoryObject/classes/class.ilObjTestRepositoryObjectGUI.php");
+require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/Video/classes/class.ilObjVideoGUI.php");
 
 /**
  */
-class ilObjTestRepositoryObject extends ilObjectPlugin implements ilLPStatusPluginInterface
+class ilObjVideo extends ilObjectPlugin
 {
 	/**
 	 * Constructor
@@ -24,7 +24,7 @@ class ilObjTestRepositoryObject extends ilObjectPlugin implements ilLPStatusPlug
 	 */
 	final function initType()
 	{
-		$this->setType(ilTestRepositoryObjectPlugin::ID);
+		$this->setType(ilVideoPlugin::ID);
 	}
 
 	/**
@@ -115,56 +115,6 @@ class ilObjTestRepositoryObject extends ilObjectPlugin implements ilLPStatusPlug
 	function isOnline()
 	{
 		return $this->online;
-	}
-
-	/**
-	 * Get all user ids with LP status completed
-	 *
-	 * @return array
-	 */
-	public function getLPCompleted() {
-		return array();
-	}
-
-	/**
-	 * Get all user ids with LP status not attempted
-	 *
-	 * @return array
-	 */
-	public function getLPNotAttempted() {
-		return array();
-	}
-
-	/**
-	 * Get all user ids with LP status failed
-	 *
-	 * @return array
-	 */
-	public function getLPFailed() {
-		return array(6);
-	}
-
-	/**
-	 * Get all user ids with LP status in progress
-	 *
-	 * @return array
-	 */
-	public function getLPInProgress() {
-		return array();
-	}
-
-	/**
-	 * Get current status for given user
-	 *
-	 * @param int $a_user_id
-	 * @return int
-	 */
-	public function getLPStatusForUser($a_user_id) {
-		global $ilUser;
-		if($ilUser->getId() == $a_user_id)
-			return $_SESSION[ilObjTestRepositoryObjectGUI::LP_SESSION_ID];
-		else
-			return ilLPStatus::LP_STATUS_NOT_ATTEMPTED_NUM;
 	}
 }
 ?>

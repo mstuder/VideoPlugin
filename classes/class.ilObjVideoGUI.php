@@ -7,13 +7,13 @@ require_once("./Services/Form/classes/class.ilCheckboxInputGUI.php");
 require_once("./Services/Tracking/classes/class.ilLearningProgress.php");
 require_once("./Services/Tracking/classes/class.ilLPStatusWrapper.php");
 require_once("./Services/Tracking/classes/status/class.ilLPStatusPlugin.php");
-require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/TestRepositoryObject/classes/class.ilTestRepositoryObjectPlugin.php");
+require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/Video/classes/class.ilVideoPlugin.php");
 
 /**
- * @ilCtrl_isCalledBy ilObjTestRepositoryObjectGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
- * @ilCtrl_Calls ilObjTestRepositoryObjectGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI, ilExportGUI
+ * @ilCtrl_isCalledBy ilObjVideoGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
+ * @ilCtrl_Calls ilObjVideoGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI, ilExportGUI
  */
-class ilObjTestRepositoryObjectGUI extends ilObjectPluginGUI
+class ilObjVideoGUI extends ilObjectPluginGUI
 {
 	const LP_SESSION_ID = 'xtst_lp_session_state';
 
@@ -70,7 +70,7 @@ class ilObjTestRepositoryObjectGUI extends ilObjectPluginGUI
 	 */
 	final function getType()
 	{
-		return ilTestRepositoryObjectPlugin::ID;
+		return ilVideoPlugin::ID;
 	}
 
 	/**
@@ -211,7 +211,7 @@ class ilObjTestRepositoryObjectGUI extends ilObjectPluginGUI
 		$this->tabs->activateTab("content");
 		/** @var ilTemplate $template */
 		$template = $this->plugin->getTemplate("tpl.content.html");
-		/** @var ilObjTestRepositoryObject $object */
+		/** @var ilObjVideo $object */
 		$object = $this->object;
 		$template->setVariable("TITLE", $object->getTitle());
 		$template->setVariable("DESCRIPTION", $object->getDescription());
@@ -240,7 +240,7 @@ class ilObjTestRepositoryObjectGUI extends ilObjectPluginGUI
 	}
 
 	/**
-	 * @param $object ilObjTestRepositoryObject
+	 * @param $object ilObjVideo
 	 * @param $form ilPropertyFormGUI
 	 */
 	private function fillObject($object, $form) {

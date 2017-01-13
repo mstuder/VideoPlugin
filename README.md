@@ -1,10 +1,10 @@
-TestRepositoryObject
+Video
 -------------------
 
-This is an example Plugin with minimal features for the Repository Object Plugin Slot.
+A very basic plugin to upload and convert videos.
 
 ```
 mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject
 cd Customizing/global/plugins/Services/Repository/RepositoryObject
-git clone https://github.com/ILIAS-eLearning/TestRepositoryObject.git
+git clone https://github.com/studer-raimann/VideoPlugin Video
 ```

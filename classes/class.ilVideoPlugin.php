@@ -4,14 +4,14 @@ include_once("./Services/Repository/classes/class.ilRepositoryObjectPlugin.php")
 
 /**
  */
-class ilTestRepositoryObjectPlugin extends ilRepositoryObjectPlugin
+class ilVideoPlugin extends ilRepositoryObjectPlugin
 {
-	const ID = "xtst";
+	const ID = "xvvv";
 
 	// must correspond to the plugin subdirectory
 	function getPluginName()
 	{
-		return "TestRepositoryObject";
+		return "Video";
 	}
 
 	protected function uninstallCustom() {
