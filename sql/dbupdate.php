@@ -13,6 +13,8 @@ $fields = array(
 	)
 );
 
-$ilDB->createTable("rep_robj_xvvv_data", $fields);
-$ilDB->addPrimaryKey("rep_robj_xvvv_data", array("id"));
+if(!$ilDB->tableExists('rep_robj_xvvv_data')) {
+    $ilDB->createTable("rep_robj_xvvv_data", $fields);
+    $ilDB->addPrimaryKey("rep_robj_xvvv_data", array("id"));
+}
 ?>
