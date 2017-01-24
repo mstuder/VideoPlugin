@@ -24,3 +24,13 @@ properties#:#Properties
 content#:#Content
 copy#:#Copy
 edit#:#Edit
+conversion_in_progress#:#The video is being converted and an additional video format will be available soon. If you have problems with the video come back soon.
+video_file#:#Video file
+override_file#:#Override existing file
+update_successful#:#Update successful.
+form_wrong_filetype#:#The given filetype is not supported.
+conversion_failed_info#:#The video could not be converted. The given video may cause problems.
+converstion_failed_fail#:#The video could not be converted.
+no_video_available#:#There's no video available.
+status#:#Status
+offline#:#Offline

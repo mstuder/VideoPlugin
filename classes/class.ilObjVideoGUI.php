@@ -202,9 +202,9 @@ class ilObjVideoGUI extends ilObjectPluginGUI
 			$form->addItem($file_input);
 		}
 
-		$num_input = new ilNumberInputGUI($this->pl->txt('form_image_at_sec'), 'image_at_sec');
-		$num_input->setInfo($this->pl->txt('form_image_at_sec_info'));
-		$form->addItem($num_input);
+//		$num_input = new ilNumberInputGUI($this->pl->txt('form_image_at_sec'), 'image_at_sec');
+//		$num_input->setInfo($this->pl->txt('form_image_at_sec_info'));
+//		$form->addItem($num_input);
 
 		return $form;
 	}

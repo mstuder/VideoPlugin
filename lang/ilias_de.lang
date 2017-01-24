@@ -24,6 +24,14 @@ properties#:#Eigenschaften
 content#:#Inhalt
 copy#:#Kopieren
 edit#:#Bearbeiten
-conversion_in_progress#:#Das Video wird noch konvertiert. Sollten Sie Probleme haben mit dem Video, versuchen Sie es später erneut, wenn das konvertierte Videoformat verfügbar ist.
+conversion_in_progress#:#Das Video wird noch konvertiert und in kürze bereitgestellt. Sollten Sie Probleme haben mit dem Video, versuchen Sie es später erneut, wenn das konvertierte Videoformat verfügbar ist.
 video_file#:#Video Datei
 override_file#:#Vorhandene Datei überschreiben
+update_successful#:#Update erfolgreich.
+form_wrong_filetype#:#Der angegebene Dateityp wird nicht unterstützt.
+conversion_failed_info#:#Eine Videoformat konnte nicht erstellt werden. Das angezeigte Video bereitet unter Umständen Probleme bei der Darstellung.
+converstion_failed_fail#:#Das Video konnte nicht konvertiert werden.
+no_video_available#:#Es ist kein abspielbares Video vorhanden.
+status#:#Status
+offline#:#Offline
+edit#:#Edit
