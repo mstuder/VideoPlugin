@@ -1,34 +1,20 @@
-<h1>Hei this is the Test Repository Object Pluign</h1>
-<div>
-    <div>
-        <label for="title">Title: </label><span id="title">{TITLE}</span>
-    </div>
-    <div>
-        <label for="description">Description: </label><span id="description">{DESCRIPTION}</span>
-    </div>
-    <div>
-        <label for="online">Online Status: </label><span id="online" style="color: {ONLINE_COLOR};">{ONLINE_STATUS}</span>
-    </div>
-</div>
 
-<div>
-    <div>
-        <a href="{SET_NOT_ATTEMPTED}">{SET_NOT_ATTEMPTED_TXT}</a>
-    </div>
-    <div>
-        <a href="{SET_IN_PROGRESS}">{SET_IN_PROGRESS_TXT}</a>
-    </div>
-    <div>
-        <a href="{SET_COMPLETED}">{SET_COMPLETED_TXT}</a>
-    </div>
-    <div>
-        <a href="{SET_FAILED}">{SET_FAILED_TXT}</a>
-    </div>
+
+<!-- BEGIN video -->
+<link rel="stylesheet" type="text/css" href="./Customizing/global/plugins/Services/Repository/RepositoryObject/Video/templates/css/mediaelementplayer.min.css" media="screen">
+<script type="text/javascript" src="./Customizing/global/plugins/Services/Repository/RepositoryObject/Video/templates/js/mediaelement-and-player.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('video').mediaelementplayer();
+    });
+</script>
+
+<div class="xvvv">
+    <video>
+        <!-- BEGIN source -->
+        <source src="{PATH}" type="video/{FORMAT}"/>
+        <!-- END source -->
+    </video>
 </div>
-<div>
-    <label for="lp_status">Current LP Status: </label><span id="lp_status">{LP_STATUS}</span>
-</div>
-<hr>
-<div>
-    {LP_INFO}
-</div>
+<!-- END video -->

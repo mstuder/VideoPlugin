@@ -1,6 +1,7 @@
 <?php
 
 include_once "./Services/Repository/classes/class.ilObjectPluginListGUI.php";
+require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/Video/classes/class.ilObjVideoAccess.php");
 
 /**
  * handles the presentation in container items (categories, courses, ...)
@@ -61,7 +62,7 @@ class ilObjVideoListGUI extends ilObjectPluginListGUI
 		$props = array();
 
 		$this->plugin->includeClass("class.ilObjVideoAccess.php");
-		if (!ilObjTestRepositoryObjectAccess::checkOnline($this->obj_id))
+		if (!ilObjVideoAccess::checkOnline($this->obj_id))
 		{
 			$props[] = array("alert" => true, "property" => $this->txt("status"),
 				"value" => $this->txt("offline"));

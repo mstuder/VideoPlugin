@@ -8,6 +8,10 @@ require_once("./Services/Tracking/classes/class.ilLearningProgress.php");
 require_once("./Services/Tracking/classes/class.ilLPStatusWrapper.php");
 require_once("./Services/Tracking/classes/status/class.ilLPStatusPlugin.php");
 require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/Video/classes/class.ilVideoPlugin.php");
+require_once("./Services/Form/classes/class.ilNumberInputGUI.php");
+require_once('./Services/Form/classes/class.ilDragDropFileInputGUI.php');
+require_once("./Customizing/global/plugins/Services/Cron/CronHook/MediaConverter/classes/Media/class.mcMedia.php");
+require_once("./Services/Form/classes/class.ilCheckboxInputGUI.php");
 
 /**
  * @ilCtrl_isCalledBy ilObjVideoGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
@@ -16,6 +20,8 @@ require_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/
 class ilObjVideoGUI extends ilObjectPluginGUI
 {
 	const LP_SESSION_ID = 'xtst_lp_session_state';
+	const A_WIDTH = 178;
+	const A_HEIGHT = 100;
 
 	/** @var  ilCtrl */
 	protected $ctrl;
@@ -26,6 +32,12 @@ class ilObjVideoGUI extends ilObjectPluginGUI
 	/** @var  ilTemplate */
 	public $tpl;
 
+	/** @var  ilVideoPlugin */
+	public $pl;
+
+	/** @var  ilObjVideo */
+	public $object;
+
 	/**
 	 * Initialisation
 	 */
@@ -35,13 +47,13 @@ class ilObjVideoGUI extends ilObjectPluginGUI
 		$this->ctrl = $ilCtrl;
 		$this->tabs = $ilTabs;
 		$this->tpl = $tpl;
+		$this->pl = new ilVideoPlugin();
 	}
 
 	public function executeCommand() {
 		global $tpl;
 
-
-		$next_class = $this->ctrl->getNextClass($this);
+				$next_class = $this->ctrl->getNextClass($this);
 		switch ($next_class) {
 			case 'ilexportgui':
 				// only if plugin supports it?
@@ -139,7 +151,6 @@ class ilObjVideoGUI extends ilObjectPluginGUI
 		if ($ilAccess->checkAccess("write", "", $this->object->getRefId()))
 		{
 			$this->tabs->addTab("properties", $this->txt("properties"), $ilCtrl->getLinkTarget($this, "editProperties"));
-			$this->tabs->addTab("export", $this->txt("export"), $ilCtrl->getLinkTargetByClass("ilexportgui", ""));
 		}
 
 		// standard permission tab
@@ -163,7 +174,8 @@ class ilObjVideoGUI extends ilObjectPluginGUI
 	 */
 	protected function initPropertiesForm() {
 		$form = new ilPropertyFormGUI();
-		$form->setTitle($this->plugin->txt("obj_xtst"));
+		$form->setTitle($this->plugin->txt("obj_xvvv"));
+		$form->setMultipart(true);
 
 		$title = new ilTextInputGUI($this->plugin->txt("title"), "title");
 		$title->setRequired(true);
@@ -177,6 +189,22 @@ class ilObjVideoGUI extends ilObjectPluginGUI
 
 		$form->setFormAction($this->ctrl->getFormAction($this, "saveProperties"));
 		$form->addCommandButton("saveProperties", $this->plugin->txt("update"));
+
+		$file_input = new ilFileInputGUI($this->pl->txt('video_file'), 'video_file');
+		$file_input->setRequired(true);
+		$file_input->setSuffixes(array( '3gp', 'flv', 'mp4', 'webm' ));
+
+		if($this->object->hasVideo()) {
+			$cb = new ilCheckboxInputGUI($this->pl->txt("override_file"));
+			$cb->addSubItem($file_input);
+			$form->addItem($cb);
+		} else {
+			$form->addItem($file_input);
+		}
+
+		$num_input = new ilNumberInputGUI($this->pl->txt('form_image_at_sec'), 'image_at_sec');
+		$num_input->setInfo($this->pl->txt('form_image_at_sec_info'));
+		$form->addItem($num_input);
 
 		return $form;
 	}
@@ -201,42 +229,87 @@ class ilObjVideoGUI extends ilObjectPluginGUI
 		if($form->checkInput()) {
 			$this->fillObject($this->object, $form);
 			$this->object->update();
+			$this->saveVideo();
 			ilUtil::sendSuccess($this->plugin->txt("update_successful"), true);
 			$this->ctrl->redirect($this, "editProperties");
 		}
 		$this->tpl->setContent($form->getHTML());
 	}
 
+	protected function saveVideo() {
+		$video_file = $_FILES['video_file'];
+		if(!$video_file || !$video_file['name'])
+			return true;
+
+		$this->deleteAllFiles();
+
+		$suffix = pathinfo($video_file['name'], PATHINFO_EXTENSION);
+		if (! $this->checkSuffix($suffix)) {
+			$response = new stdClass();
+			$response->error = $this->pl->txt('form_wrong_filetype') . ' (' . $suffix . ')';
+			throw new ilException($this->pl->txt('form_wrong_filetype') . ' (' . $suffix . ')');
+		}
+
+		move_uploaded_file($video_file['tmp_name'], $this->object->getOriginalPath($suffix));
+
+		$mediaConverter = new mcMedia();
+		$mediaConverter->uploadFile('video', $suffix, $this->object->getVideoPath(), substr($this->object->getVideoPath(), 0, -1), $this->object->getId());
+	}
+
+	protected function deleteAllFiles() {
+		$this->deleteFiles($this->object->getVideoPath()."*");
+		$this->deleteFiles($this->object->getIconPath()."*");
+	}
+
+	protected function deleteFiles($path) {
+		$files = glob($path); // get all file names
+		foreach($files as $file){ // iterate files
+			if(is_file($file))
+				unlink($file); // delete file
+		}
+	}
+
+	public function extractImage($atSecond = 1)
+	{
+		try {
+			mcFFmpeg::extractImage($this->object->getOriginalPath(), $this->object->getIconPath(), $this->object->getPosterTitle(), $atSecond);
+		} catch (ilFFmpegException $e) {
+			ilUtil::sendFailure($e->getMessage(), true);
+		}
+		ilUtil::resizeImage($this->object->getPosterPath(), $this->object->getThumbnailPath(), self::A_WIDTH, self::A_HEIGHT, true);
+	}
+
 	protected function showContent() {
 		$this->tabs->activateTab("content");
-		/** @var ilTemplate $template */
-		$template = $this->plugin->getTemplate("tpl.content.html");
-		/** @var ilObjVideo $object */
-		$object = $this->object;
-		$template->setVariable("TITLE", $object->getTitle());
-		$template->setVariable("DESCRIPTION", $object->getDescription());
-		$template->setVariable("ONLINE_STATUS", $object->isOnline()?"Online":"Offline");
-		$template->setVariable("ONLINE_COLOR", $object->isOnline()?"green":"red");
 
-		$template->setVariable("SET_COMPLETED", $this->ctrl->getLinkTarget($this, "setStatusToCompleted"));
-		$template->setVariable("SET_COMPLETED_TXT", $this->plugin->txt("set_completed"));
+		if(count($this->object->getSourcesToURL()) && $this->object->conversionFailed()) {
+			// Conversion failed but we have a displayable format.
+			ilUtil::sendInfo($this->pl->txt("conversion_failed_info"));
+		} elseif(!count($this->object->getSourcesToURL() && $this->object->conversionFailed())) {
+			//converstion failed and we have no displayable format.
+			ilUtil::sendFailure($this->pl->txt("converstion_failed_fail"));
+		}
 
-		$template->setVariable("SET_NOT_ATTEMPTED", $this->ctrl->getLinkTarget($this, "setStatusToNotAttempted"));
-		$template->setVariable("SET_NOT_ATTEMPTED_TXT", $this->plugin->txt("set_not_attempted"));
+		if($this->object->isConverting()) {
+			ilUtil::sendInfo($this->pl->txt("conversion_in_progress"));
+		}
 
-		$template->setVariable("SET_FAILED", $this->ctrl->getLinkTarget($this, "setStatusToFailed"));
-		$template->setVariable("SET_FAILED_TXT", $this->plugin->txt("set_failed"));
+		if(!count($this->object->getSourcesToURL()))
+			$html = $this->pl->txt("no_video_available");
+		else {
 
-		$template->setVariable("SET_IN_PROGRESS", $this->ctrl->getLinkTarget($this, "setStatusToInProgress"));
-		$template->setVariable("SET_IN_PROGRESS_TXT", $this->plugin->txt("set_in_progress"));
+			$tpl = $this->pl->getTemplate("tpl.content.html");
 
-		global $ilUser;
-		$progress = new ilLPStatusPlugin($this->object->getId());
-		$status = $progress->determineStatus($this->object->getId(), $ilUser->getId());
-		$template->setVariable("LP_STATUS", $this->plugin->txt("lp_status_".$status));
-		$template->setVariable("LP_INFO", $this->plugin->txt("lp_status_info"));
+			foreach ($this->object->getSourcesToURL() as $format => $path) {
+				$tpl->setCurrentBlock("source");
+				$tpl->setVariable("PATH", $path);
+				$tpl->setVariable("FORMAT", $format);
+			}
 
-		$this->tpl->setContent($template->get());
+			$html = $tpl->get();
+		}
+
+		$this->tpl->setContent($html);
 	}
 
 	/**
@@ -293,6 +366,14 @@ class ilObjVideoGUI extends ilObjectPluginGUI
 
 	protected function setStatusToNotAttempted() {
 		$this->setStatusAndRedirect(ilLPStatus::LP_STATUS_NOT_ATTEMPTED_NUM);
+	}
+
+	function checkSuffix($suffix) {
+		if (in_array($suffix, array( '3pgg', '3gp', 'flv', 'mp4', 'webm' ))) {
+			return true;
+		}
+
+		return false;
 	}
 }
 ?>

@@ -24,3 +24,6 @@ properties#:#Eigenschaften
 content#:#Inhalt
 copy#:#Kopieren
 edit#:#Bearbeiten
+conversion_in_progress#:#Das Video wird noch konvertiert. Sollten Sie Probleme haben mit dem Video, versuchen Sie es später erneut, wenn das konvertierte Videoformat verfügbar ist.
+video_file#:#Video Datei
+override_file#:#Vorhandene Datei überschreiben
